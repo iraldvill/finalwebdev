@@ -11,7 +11,7 @@
     <div class="page-wrapper">
         <div class="site-container">
 
-            <!-- HEADER / NAVIGATION -->
+            {# HEADER / NAVIGATION #}
             <header class="site-header">
                 <img src="{{ asset('images/logo.png') }}" alt="Villaflores Gaming Cafe Logo" class="header-logo">
                 <nav class="header-nav">
@@ -22,27 +22,15 @@
                     <a href="#community" class="nav-link">Community</a>
                 </nav>
                 <div class="header-actions">
-                    {# TODO: replace the plain URLs below with path('route_name') once those pages exist in Symfony #}
-                    {% if is_granted('ROLE_ADMIN') %}
-                        <span class="header-greeting">Hi, {{ app.user.fullName|default(app.user.userIdentifier) }}</span>
-                        <a href="{{ path('app_dashboard') }}" class="btn-login">Admin Panel</a>
-                        <a href="/logout" class="btn-login">Logout</a>
-                    {% elseif app.user %}
-                        <span class="header-greeting">Hi, {{ app.user.fullName|default(app.user.userIdentifier) }}</span>
-                        <a href="/my-bookings" class="btn-login">My Bookings</a>
-                        <a href="/logout" class="btn-login">Logout</a>
-                    {% else %}
-                        <a href="/login" class="btn-login">Login</a>
-                    {% endif %}
-                    {% if not is_granted('ROLE_ADMIN') %}
-                        <a href="/booking" class="btn-book">Book a Seat</a>
-                    {% endif %}
+                    {# TODO: swap for real login/logout/admin links once Symfony security is set up #}
+                    <a href="#" class="btn-login">Login</a>
+                    <a href="#" class="btn-book">Book a Seat</a>
                 </div>
             </header>
 
             <div class="header-divider"></div>
 
-            <!-- SECTION 1 — HERO -->
+            {# SECTION 1 — HERO #}
             <section class="hero-section brand-grid" id="home">
                 <div class="hero-grid">
                     <div class="hero-content">
@@ -78,18 +66,18 @@
 
                     <div class="hero-media">
                         <div class="hero-image-box">
-                            <img src="{{ asset('images/hero-main.jpg') }}" alt="Gaming PC setup" class="hero-main-img">
+                            <img src="https://images.unsplash.com/photo-1633545505446-586bf83717f0?w=1400&h=1000&fit=crop&auto=format" alt="Gaming PC setup" class="hero-main-img">
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- SECTION 2 — ABOUT -->
+            {# SECTION 2 — ABOUT #}
             <section class="about-section" id="about">
                 <div class="about-grid">
                     <div class="about-images-col">
-                        <img src="{{ asset('images/about-left.jpg') }}" alt="Gaming rig close up" class="about-img-left">
-                        <img src="{{ asset('images/about-right.jpg') }}" alt="Ambient gaming station" class="about-img-right">
+                        <img src="https://images.unsplash.com/photo-1696710257827-75e2e5954059?w=900&h=1200&fit=crop&auto=format" alt="Gaming rig close up" class="about-img-left">
+                        <img src="https://images.unsplash.com/photo-1633545486613-feaf749f7805?w=900&h=1100&fit=crop&auto=format" alt="Ambient gaming station" class="about-img-right">
                     </div>
 
                     <div class="about-content">
@@ -105,7 +93,7 @@
                             </div>
                             <div class="about-bullet-item">
                                 <span class="diamond diamond-pink"></span>
-                                <span class="bullet-text">Fast &amp; stable fiber internet</span>
+                                <span class="bullet-text">Fast & stable fiber internet</span>
                             </div>
                             <div class="about-bullet-item">
                                 <span class="diamond diamond-pink"></span>
@@ -120,7 +108,7 @@
                 </div>
             </section>
 
-            <!-- SECTION 3 — FEATURES / EXPERIENCE -->
+            {# SECTION 3 — FEATURES / EXPERIENCE #}
             <section class="features-section brand-grid" id="experience">
                 <div class="center-header">
                     <h2 class="section-title features-headline">EVERYTHING YOU NEED TO PLAY AT YOUR BEST</h2>
@@ -161,11 +149,11 @@
                 </div>
             </section>
 
-            <!-- SECTION 4 — ENVIRONMENT / SETUP -->
+            {# SECTION 4 — ENVIRONMENT / SETUP #}
             <section class="environment-section">
                 <div class="env-layout-grid">
                     <div class="env-banner-top">
-                        <img src="{{ asset('images/env-top.jpg') }}" alt="Gaming cafe lounge" class="env-img-top">
+                        <img src="https://images.unsplash.com/photo-1725273578052-14575f0daa01?w=1400&h=900&fit=crop&auto=format" alt="Gaming cafe lounge" class="env-img-top">
                     </div>
 
                     <div class="env-info-card">
@@ -183,7 +171,7 @@
                             </div>
                             <div>
                                 <div class="env-stat-val text-cerulean">Snacks</div>
-                                <div class="env-stat-lbl">&amp; Drinks</div>
+                                <div class="env-stat-lbl">& Drinks</div>
                             </div>
                         </div>
                     </div>
@@ -193,12 +181,12 @@
                     </div>
 
                     <div class="env-banner-bottom">
-                        <img src="{{ asset('images/env-bottom.jpg') }}" alt="Gaming station setup" class="env-img-bottom">
+                        <img src="https://images.unsplash.com/photo-1633545486613-feaf749f7805?w=1400&h=900&fit=crop&auto=format" alt="Gaming station setup" class="env-img-bottom">
                     </div>
                 </div>
             </section>
 
-            <!-- SECTION 5 — PRICING / RATES -->
+            {# SECTION 5 — PRICING / RATES #}
             <section class="pricing-section brand-grid" id="rates">
                 <div class="center-header">
                     <h2 class="section-title">SIMPLE, FLEXIBLE PRICING</h2>
@@ -227,7 +215,7 @@
                                 <span>Full-speed internet</span>
                             </li>
                         </ul>
-                        <a href="/booking?plan=Hourly%20Gaming" class="btn-plan btn-plan-outline">CHOOSE PLAN</a>
+                        <a href="#" class="btn-plan btn-plan-outline">CHOOSE PLAN</a>
                     </div>
 
                     <div class="pricing-card featured-card">
@@ -252,7 +240,7 @@
                                 <span>Free refreshment</span>
                             </li>
                         </ul>
-                        <a href="/booking?plan=Extended%20Gaming" class="btn-plan btn-plan-solid">CHOOSE PLAN</a>
+                        <a href="#" class="btn-plan btn-plan-solid">CHOOSE PLAN</a>
                     </div>
 
                     <div class="pricing-card">
@@ -276,12 +264,12 @@
                                 <span>Group discount</span>
                             </li>
                         </ul>
-                        <a href="/booking?plan=Gaming%20Package" class="btn-plan btn-plan-outline">CHOOSE PLAN</a>
+                        <a href="#" class="btn-plan btn-plan-outline">CHOOSE PLAN</a>
                     </div>
                 </div>
             </section>
 
-            <!-- SECTION 6 — COMMUNITY -->
+            {# SECTION 6 — COMMUNITY #}
             <section class="community-section" id="community">
                 <div class="community-grid">
                     <div class="community-text-col">
@@ -290,11 +278,11 @@
                             Meet fellow players, team up for ranked matches, or join a casual weekend session. Villaflores is where the local gaming community comes together to play, connect, and relax.
                         </p>
                         <div class="community-badges-row">
-                            <a href="/reviews" class="community-badge-box pink">
+                            <a href="#" class="community-badge-box pink">
                                 <div class="badge-lead text-pink">RATE US</div>
                                 <div class="badge-sub">GIVE US A REVIEW!</div>
                             </a>
-                            <a href="/tournaments" class="community-badge-box cerulean">
+                            <a href="#" class="community-badge-box cerulean">
                                 <div class="badge-lead text-cerulean">LOCAL</div>
                                 <div class="badge-sub">TOURNAMENTS</div>
                             </a>
@@ -302,14 +290,14 @@
                     </div>
 
                     <div class="community-images-col">
-                        <img src="{{ asset('images/comm-tall.jpg') }}" alt="Gamers playing together" class="comm-img-tall">
-                        <img src="{{ asset('images/comm-players.jpg') }}" alt="Two players at monitor" class="comm-img-sm">
-                        <img src="{{ asset('images/comm-keyboard.jpg') }}" alt="Mechanical keyboard player" class="comm-img-sm">
+                        <img src="https://images.unsplash.com/photo-1659535915214-e7cbac112038?w=900&h=1100&fit=crop&auto=format" alt="Gamers playing together" class="comm-img-tall">
+                        <img src="https://images.unsplash.com/photo-1758179765254-5d2058fd1ff7?w=900&h=700&fit=crop&auto=format" alt="Two players at monitor" class="comm-img-sm">
+                        <img src="https://images.unsplash.com/photo-1548214079-50eccb4e0a32?w=900&h=700&fit=crop&auto=format" alt="Mechanical keyboard player" class="comm-img-sm">
                     </div>
                 </div>
             </section>
 
-            <!-- SECTION 7 — FOOTER -->
+            {# SECTION 7 — FOOTER #}
             <footer class="site-footer">
                 <div class="footer-grid">
                     <div>

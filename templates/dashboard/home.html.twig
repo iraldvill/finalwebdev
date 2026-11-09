@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — Villaflores Gaming Cafe</title>
+<link rel="stylesheet" href="{{ asset('css/admin.css') }}">
+</head>
+<body>
+
+<aside class="sidebar">
+  <div>
+    <div class="sidebar-brand">VILLAFLORES <span>GAMING CAFE</span></div>
+    <div class="sidebar-welcome">Welcome, {{ adminName }}</div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <button type="button" class="active" data-tab="dashboard" onclick="showTab('dashboard', this)">
+      <span class="icon">▦</span> Dashboard
+    </button>
+    <button type="button" data-tab="bookings" onclick="showTab('bookings', this)">
+      <span class="icon">▤</span> Bookings
+    </button>
+    <button type="button" data-tab="accounts" onclick="showTab('accounts', this)">
+      <span class="icon">◈</span> Accounts
+    </button>
+    <button type="button" data-tab="stations" onclick="showTab('stations', this)">
+      <span class="icon">▥</span> PC Stations
+    </button>
+    <button type="button" data-tab="reviews" onclick="showTab('reviews', this)">
+      <span class="icon">★</span> Reviews
+    </button>
+  </nav>
+
+  <div class="sidebar-footer">
+    <a href="#">← Back to Site</a>
+    <a href="#">Sign Out</a>
+  </div>
+</aside>
+
+<div class="content-area">
+  <header>
+    <div>
+      <div class="page-title" id="pageTitle">Dashboard</div>
+      <div class="subtitle">Accounts &amp; booking overview</div>
+    </div>
+    <div class="subtitle">Updated {{ 'now'|date('M j, Y — g:i A') }}</div>
+  </header>
+
+  <main>
+
+    {# ===================== DASHBOARD ===================== #}
+    <div class="tab-panel active" id="tab-dashboard">
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-num">{{ stats.total_users }}</div>
+          <div class="stat-label">Registered accounts</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">{{ stats.total_bookings }}</div>
+          <div class="stat-label">Total bookings</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">{{ stats.active_bookings }}</div>
+          <div class="stat-label">Active / confirmed</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">{{ stats.today_bookings }}</div>
+          <div class="stat-label">Booked for today</div>
+        </div>
+      </div>
+
+      <section class="panel">
+        <div class="panel-head">
+          <h2>Recent Bookings</h2>
+          <span class="count">{{ bookings|length }} total</span>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>User</th>
+              <th>Plan</th>
+              <th>Date</th>
+              <th>Status</th>
+              <th>Payment</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for b in bookings|slice(0, 5) %}
+              <tr>
+                <td>{{ b.full_name ?? 'Deleted user' }}</td>
+                <td>{{ b.plan_name }}</td>
+                <td>{{ b.booking_date }}</td>
+                <td><span class="badge {{ b.status|lower }}">{{ b.status }}</span></td>
+                <td><span class="badge {{ b.payment_status|lower }}">{{ b.payment_status }}</span></td>
+              </tr>
+            {% else %}
+              <tr class="empty-row"><td colspan="5">No bookings yet.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </section>
+    </div>
+
+    {# ===================== BOOKINGS ===================== #}
+    <div class="tab-panel" id="tab-bookings">
+      <section class="panel">
+        <div class="panel-head">
+          <h2>All Bookings</h2>
+          <span class="count">{{ bookings|length }} total</span>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>User</th>
+              <th>Plan</th>
+              <th>Station(s)</th>
+              <th>Date</th>
+              <th>Time</th>
+              <th>Status</th>
+              <th>Payment</th>
+              <th>Booked on</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for b in bookings %}
+              <tr>
+                <td>{{ b.full_name ?? 'Deleted user' }}</td>
+                <td>{{ b.plan_name }}</td>
+                <td>{{ b.stations }}</td>
+                <td>{{ b.booking_date }}</td>
+                <td>{{ b.booking_time }} – {{ b.booking_time_end }}</td>
+                <td><span class="badge {{ b.status|lower }}">{{ b.status }}</span></td>
+                <td>
+                  {{ b.payment_method ?? '—' }} —
+                  <span class="badge {{ b.payment_status|lower }}">{{ b.payment_status }}</span>
+                </td>
+                <td>{{ b.created_at }}</td>
+                <td class="row-actions">
+                  {% if b.status|lower == 'pending' %}
+                    <button type="button" class="accept-btn">Accept</button>
+                    <button type="button" class="reject-btn">Reject</button>
+                  {% endif %}
+                  {% if b.payment_status|lower != 'paid' %}
+                    <button type="button" class="accept-btn">Mark Paid</button>
+                  {% endif %}
+                  <button type="button" class="delete-btn">Delete</button>
+                </td>
+              </tr>
+            {% else %}
+              <tr class="empty-row"><td colspan="9">No bookings yet.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </section>
+    </div>
+
+    {# ===================== ACCOUNTS ===================== #}
+    <div class="tab-panel" id="tab-accounts">
+      <section class="panel">
+        <div class="panel-head">
+          <h2>Registered Accounts</h2>
+          <span class="count">{{ users|length }} total</span>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Full Name</th>
+              <th>Email</th>
+              <th>Role</th>
+              <th>Joined</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for u in users %}
+              <tr>
+                <td>{{ u.full_name }}</td>
+                <td>{{ u.email }}</td>
+                <td><span class="badge {{ u.role == 'admin' ? 'confirmed' : 'default' }}">{{ u.role }}</span></td>
+                <td>{{ u.created_at }}</td>
+                <td class="row-actions">
+                  <a href="#" class="edit-btn">Edit</a>
+                  {% if u.full_name != adminName %}
+                    <button type="button" class="delete-btn">Delete</button>
+                  {% endif %}
+                </td>
+              </tr>
+            {% else %}
+              <tr class="empty-row"><td colspan="5">No accounts yet.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </section>
+    </div>
+
+    {# ===================== PC STATIONS ===================== #}
+    <div class="tab-panel" id="tab-stations">
+      <section class="panel" style="padding: 24px;">
+        <div class="pc-legend">
+          <span><span class="swatch idle"></span> Available</span>
+          <span><span class="swatch occupied"></span> Reserved today</span>
+        </div>
+        <p style="font-size: 12px; color: var(--muted-foreground); margin-bottom: 20px;">
+          Shows today's actual PC assignments — customers now pick their specific station number when booking.
+        </p>
+        <div class="pc-grid">
+          {% for n in 1..totalStations %}
+            {% set assigned = pcAssignments[n] %}
+            <div class="pc-card {{ assigned ? 'occupied' : '' }}">
+              <div class="pc-card-name">PC {{ n }}</div>
+              {% if assigned %}
+                <span class="pc-card-status">Reserved</span>
+                <div class="pc-card-detail">
+                  {{ assigned.full_name ?? 'Deleted user' }}<br>
+                  {{ assigned.plan_name }} — {{ assigned.booking_time }}–{{ assigned.booking_time_end }}
+                </div>
+              {% else %}
+                <span class="pc-card-status">Idle</span>
+              {% endif %}
+            </div>
+          {% endfor %}
+        </div>
+      </section>
+    </div>
+
+    {# ===================== REVIEWS ===================== #}
+    <div class="tab-panel" id="tab-reviews">
+      <section class="panel">
+        <div class="panel-head">
+          <h2>Customer Reviews</h2>
+          <span class="count">{{ reviews|length }} total</span>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>User</th>
+              <th>Rating</th>
+              <th>Feedback</th>
+              <th>Posted on</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for r in reviews %}
+              <tr>
+                <td>{{ r.full_name ?? 'Deleted user' }}</td>
+                <td style="color: var(--pink); letter-spacing: 2px;">
+                  {% for i in 1..5 %}{{ i <= r.rating ? '★' : '☆' }}{% endfor %}
+                </td>
+                <td>
+                  {% if r.comment %}
+                    {{ r.comment|nl2br }}
+                  {% else %}
+                    <span style="color: var(--muted-foreground);">—</span>
+                  {% endif %}
+                </td>
+                <td>{{ r.created_at }}</td>
+                <td><button type="button" class="delete-btn">Delete</button></td>
+              </tr>
+            {% else %}
+              <tr class="empty-row"><td colspan="5">No reviews yet.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </section>
+    </div>
+
+  </main>
+</div>
+
+<script src="{{ asset('js/admin.js') }}"></script>
+</body>
+</html>
