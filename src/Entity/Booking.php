@@ -22,10 +22,10 @@ class Booking
     #[ORM\Column(type: Types::DATE_IMMUTABLE)]
     private ?\DateTimeImmutable $bookingDate = null;
 
-    #[ORM\Column(type: Types::DATE_IMMUTABLE)]
+    #[ORM\Column(type: Types::TIME_IMMUTABLE)]
     private ?\DateTimeImmutable $bookingTime = null;
 
-    #[ORM\Column(type: Types::DATE_IMMUTABLE)]
+    #[ORM\Column(type: Types::TIME_IMMUTABLE)]
     private ?\DateTimeImmutable $bookingTimeEnd = null;
 
     #[ORM\Column]
@@ -35,27 +35,28 @@ class Booking
     private ?string $paymentMethod = null;
 
     #[ORM\Column(length: 20)]
-    private ?string $paymentStatus = null;
+    private ?string $paymentStatus = 'unpaid';
 
     #[ORM\Column(length: 20)]
-    private ?string $status = null;
+    private ?string $status = 'pending';
 
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
 
-    #[ORM\ManyToOne(inversedBy: 'booking')]
+    #[ORM\ManyToOne(inversedBy: 'bookings')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?User $User = null;
+    private ?User $user = null;
 
     /**
      * @var Collection<int, BookingStation>
      */
     #[ORM\OneToMany(targetEntity: BookingStation::class, mappedBy: 'booking', orphanRemoval: true)]
-    private Collection $BookingStations;
+    private Collection $bookingStations;
 
     public function __construct()
     {
-        $this->BookingStations = new ArrayCollection();
+        $this->bookingStations = new ArrayCollection();
+        $this->createdAt = new \DateTimeImmutable();
     }
 
     public function getId(): ?int
@@ -173,12 +174,12 @@ class Booking
 
     public function getUser(): ?User
     {
-        return $this->User;
+        return $this->user;
     }
 
-    public function setUser(?User $User): static
+    public function setUser(?User $user): static
     {
-        $this->User = $User;
+        $this->user = $user;
 
         return $this;
     }
@@ -188,13 +189,13 @@ class Booking
      */
     public function getBookingStations(): Collection
     {
-        return $this->BookingStations;
+        return $this->bookingStations;
     }
 
     public function addBookingStation(BookingStation $bookingStation): static
     {
-        if (!$this->BookingStations->contains($bookingStation)) {
-            $this->BookingStations->add($bookingStation);
+        if (!$this->bookingStations->contains($bookingStation)) {
+            $this->bookingStations->add($bookingStation);
             $bookingStation->setBooking($this);
         }
 
@@ -203,7 +204,7 @@ class Booking
 
     public function removeBookingStation(BookingStation $bookingStation): static
     {
-        if ($this->BookingStations->removeElement($bookingStation)) {
+        if ($this->bookingStations->removeElement($bookingStation)) {
             // set the owning side to null (unless already changed)
             if ($bookingStation->getBooking() === $this) {
                 $bookingStation->setBooking(null);

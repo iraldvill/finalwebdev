@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Booking;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -16,28 +17,41 @@ class BookingRepository extends ServiceEntityRepository
         parent::__construct($registry, Booking::class);
     }
 
-//    /**
-//     * @return Booking[] Returns an array of Booking objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('b')
-//            ->andWhere('b.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('b.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    /**
+     * All bookings, newest first, with the customer and PCs loaded in one query.
+     *
+     * @return Booking[]
+     */
+    public function findAllNewestFirst(): array
+    {
+        return $this->createQueryBuilder('b')
+            ->leftJoin('b.user', 'u')->addSelect('u')
+            ->leftJoin('b.bookingStations', 's')->addSelect('s')
+            ->orderBy('b.bookingDate', 'DESC')
+            ->addOrderBy('b.bookingTime', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
 
-//    public function findOneBySomeField($value): ?Booking
-//    {
-//        return $this->createQueryBuilder('b')
-//            ->andWhere('b.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+    /** Bookings that are "confirmed" or "active". */
+    public function countActive(): int
+    {
+        return (int) $this->createQueryBuilder('b')
+            ->select('COUNT(b.id)')
+            ->where('LOWER(b.status) IN (:statuses)')
+            ->setParameter('statuses', ['active', 'confirmed'])
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    /** Bookings whose booking date is the given day. */
+    public function countOnDate(\DateTimeImmutable $date): int
+    {
+        return (int) $this->createQueryBuilder('b')
+            ->select('COUNT(b.id)')
+            ->where('b.bookingDate = :date')
+            ->setParameter('date', $date, Types::DATE_IMMUTABLE)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
 }

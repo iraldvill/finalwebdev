@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login — Villaflores Gaming Cafe</title>
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/auth.css') }}">
+</head>
+<body>
+
+<div class="auth-wrapper brand-grid">
+    <div class="auth-card">
+        <a href="{{ path('app_home') }}">
+            <img src="{{ asset('images/logo.png') }}" alt="Villaflores Gaming Cafe Logo" class="auth-logo">
+        </a>
+
+        <h1 class="auth-title">Sign in</h1>
+        <p class="auth-sub">Log in to book a seat or manage the cafe.</p>
+
+        {% for message in app.flashes('success') %}
+            <div class="auth-success">{{ message }}</div>
+        {% endfor %}
+
+        {% if error %}
+            <div class="auth-error">{{ error.messageKey }}</div>
+        {% endif %}
+
+        <form method="post" class="auth-form">
+            <div class="auth-field">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="_username" value="{{ last_username }}"
+                       autocomplete="email" required autofocus>
+            </div>
+
+            <div class="auth-field">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="_password"
+                       autocomplete="current-password" required>
+            </div>
+
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+            <button type="submit" class="btn-primary-pink auth-submit">Login</button>
+        </form>
+
+        <p class="auth-switch">No account yet? <a href="{{ path('app_register') }}">Create one</a></p>
+        <a href="{{ path('app_home') }}" class="auth-back">← Back to Site</a>
+    </div>
+</div>
+
+</body>
+</html>

@@ -14,7 +14,7 @@ class BookingStation
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(inversedBy: 'BookingStations')]
+    #[ORM\ManyToOne(inversedBy: 'bookingStations')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Booking $booking = null;
 

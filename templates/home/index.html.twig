@@ -22,9 +22,22 @@
                     <a href="#community" class="nav-link">Community</a>
                 </nav>
                 <div class="header-actions">
-                    {# TODO: swap for real login/logout/admin links once Symfony security is set up #}
-                    <a href="#" class="btn-login">Login</a>
-                    <a href="#" class="btn-book">Book a Seat</a>
+                    {% if is_granted('ROLE_ADMIN') %}
+                        <span class="header-greeting">Hi, {{ app.user.fullName }}</span>
+                        <a href="{{ path('app_dashboard') }}" class="btn-login">Admin Panel</a>
+                        <a href="{{ path('app_logout') }}" class="btn-login">Logout</a>
+                    {% elseif is_granted('IS_AUTHENTICATED') %}
+                        <span class="header-greeting">Hi, {{ app.user.fullName }}</span>
+                        <a href="#" class="btn-login">My Bookings</a>
+                        <a href="{{ path('app_logout') }}" class="btn-login">Logout</a>
+                    {% else %}
+                        <a href="{{ path('app_login') }}" class="btn-login">Login</a>
+                    {% endif %}
+
+                    {% if not is_granted('ROLE_ADMIN') %}
+                        {# Guests go to the login page. TODO: point logged-in users to the booking page. #}
+                        <a href="{% if is_granted('IS_AUTHENTICATED') %}#{% else %}{{ path('app_login') }}{% endif %}" class="btn-book">Book a Seat</a>
+                    {% endif %}
                 </div>
             </header>
 

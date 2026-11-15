@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register — Villaflores Gaming Cafe</title>
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/auth.css') }}">
+</head>
+<body>
+
+<div class="auth-wrapper brand-grid">
+    <div class="auth-card">
+        <a href="{{ path('app_home') }}">
+            <img src="{{ asset('images/logo.png') }}" alt="Villaflores Gaming Cafe Logo" class="auth-logo">
+        </a>
+
+        <h1 class="auth-title">Create account</h1>
+        <p class="auth-sub">Sign up to book your seat.</p>
+
+        {{ form_start(registrationForm, {'attr': {'class': 'auth-form', 'novalidate': 'novalidate'}}) }}
+
+            <div class="auth-field">
+                {{ form_label(registrationForm.fullName) }}
+                {{ form_widget(registrationForm.fullName) }}
+                {{ form_errors(registrationForm.fullName) }}
+            </div>
+
+            <div class="auth-field">
+                {{ form_label(registrationForm.email) }}
+                {{ form_widget(registrationForm.email) }}
+                {{ form_errors(registrationForm.email) }}
+            </div>
+
+            <div class="auth-field">
+                {{ form_label(registrationForm.role) }}
+                {{ form_widget(registrationForm.role) }}
+                {{ form_errors(registrationForm.role) }}
+            </div>
+
+            <div class="auth-field" id="code-field">
+                {{ form_label(registrationForm.registrationCode) }}
+                {{ form_widget(registrationForm.registrationCode) }}
+                {{ form_errors(registrationForm.registrationCode) }}
+                <span class="auth-hint">Ask the cafe owner for the code. Customers don't need one.</span>
+            </div>
+
+            <div class="auth-field">
+                {{ form_label(registrationForm.plainPassword.first) }}
+                {{ form_widget(registrationForm.plainPassword.first) }}
+                {{ form_errors(registrationForm.plainPassword.first) }}
+            </div>
+
+            <div class="auth-field">
+                {{ form_label(registrationForm.plainPassword.second) }}
+                {{ form_widget(registrationForm.plainPassword.second) }}
+                {{ form_errors(registrationForm.plainPassword.second) }}
+            </div>
+
+            <button type="submit" class="btn-primary-pink auth-submit">Register</button>
+
+        {{ form_end(registrationForm) }}
+
+        <p class="auth-switch">Already have an account? <a href="{{ path('app_login') }}">Log in</a></p>
+        <a href="{{ path('app_home') }}" class="auth-back">← Back to Site</a>
+    </div>
+</div>
+
+<script>
+    // Only show the registration code box for staff and admin
+    (function () {
+        var role = document.getElementById('{{ registrationForm.role.vars.id }}');
+        var codeField = document.getElementById('code-field');
+        function toggle() {
+            codeField.hidden = (role.value === 'customer');
+        }
+        role.addEventListener('change', toggle);
+        toggle();
+    })();
+</script>
+</body>
+</html>
