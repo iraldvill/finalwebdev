@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}Admin{% endblock %} — Villaflores Gaming Cafe</title>
+<link rel="stylesheet" href="{{ asset('css/admin.css') }}">
+<link rel="stylesheet" href="{{ asset('css/admin-extra.css') }}">
+</head>
+<body>
+
+<aside class="sidebar">
+  <div>
+    <div class="sidebar-brand">VILLAFLORES <span>GAMING CAFE</span></div>
+    <div class="sidebar-welcome">Welcome, {{ app.user.fullName }}</div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <button type="button" data-url="{{ path('app_dashboard') }}#dashboard" onclick="location.href=this.dataset.url">
+      <span class="icon">▦</span> Dashboard
+    </button>
+    <button type="button" data-url="{{ path('app_dashboard') }}#bookings" onclick="location.href=this.dataset.url">
+      <span class="icon">▤</span> Bookings
+    </button>
+    <button type="button" class="active" data-url="{{ path('app_dashboard') }}#accounts" onclick="location.href=this.dataset.url">
+      <span class="icon">◈</span> Accounts
+    </button>
+    <button type="button" data-url="{{ path('app_dashboard') }}#stations" onclick="location.href=this.dataset.url">
+      <span class="icon">▥</span> PC Stations
+    </button>
+    <button type="button" data-url="{{ path('app_dashboard') }}#reviews" onclick="location.href=this.dataset.url">
+      <span class="icon">★</span> Reviews
+    </button>
+  </nav>
+
+  <div class="sidebar-footer">
+    <a href="{{ path('app_profile') }}">My Profile</a>
+    <a href="{{ path('app_home') }}">← Back to Site</a>
+    <a href="{{ path('app_logout') }}">Sign Out</a>
+  </div>
+</aside>
+
+<div class="content-area">
+  <header>
+    <div>
+      <div class="page-title">{% block page_title %}{% endblock %}</div>
+      <div class="subtitle">{% block page_subtitle %}{% endblock %}</div>
+    </div>
+  </header>
+
+  <main>
+    {% for type, messages in app.flashes %}
+      {% for message in messages %}
+        <div class="flash flash-{{ type }}">{{ message }}</div>
+      {% endfor %}
+    {% endfor %}
+
+    {% block content %}{% endblock %}
+  </main>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile — Villaflores Gaming Cafe</title>
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/auth.css') }}">
+</head>
+<body>
+
+<div class="auth-wrapper brand-grid">
+    <div class="auth-card profile-card">
+        <a href="{{ path('app_home') }}">
+            <img src="{{ asset('images/logo.png') }}" alt="Villaflores Gaming Cafe Logo" class="auth-logo">
+        </a>
+
+        <h1 class="auth-title">My Profile</h1>
+
+        {% for type, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="{{ type == 'success' ? 'auth-success' : 'auth-error' }}">{{ message }}</div>
+            {% endfor %}
+        {% endfor %}
+
+        <dl class="profile-list">
+            <dt>Name</dt>
+            <dd>{{ user.fullName }}</dd>
+
+            <dt>Email</dt>
+            <dd>{{ user.email }}</dd>
+
+            <dt>Role</dt>
+            <dd><span class="profile-role role-{{ role }}">{{ role }}</span></dd>
+
+            <dt>Member since</dt>
+            <dd>{{ user.createdAt|date('F j, Y') }}</dd>
+
+            <dt>Status</dt>
+            <dd>{{ user.active ? 'Active' : 'Disabled' }}</dd>
+        </dl>
+
+        <h2 class="profile-section-title">Change password</h2>
+
+        {{ form_start(form, {'attr': {'class': 'auth-form', 'novalidate': 'novalidate'}}) }}
+
+            <div class="auth-field">
+                {{ form_label(form.currentPassword) }}
+                {{ form_widget(form.currentPassword) }}
+                {{ form_errors(form.currentPassword) }}
+            </div>
+
+            <div class="auth-field">
+                {{ form_label(form.newPassword.first) }}
+                {{ form_widget(form.newPassword.first) }}
+                {{ form_errors(form.newPassword.first) }}
+            </div>
+
+            <div class="auth-field">
+                {{ form_label(form.newPassword.second) }}
+                {{ form_widget(form.newPassword.second) }}
+                {{ form_errors(form.newPassword.second) }}
+            </div>
+
+            <button type="submit" class="btn-primary-pink auth-submit">Update password</button>
+
+        {{ form_end(form) }}
+
+        <div class="profile-links">
+            <a href="{{ path('app_home') }}">← Back to Site</a>
+            {% if is_granted('ROLE_ADMIN') %}
+                <a href="{{ path('app_dashboard') }}">Admin Panel</a>
+            {% endif %}
+            <a href="{{ path('app_logout') }}">Logout</a>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

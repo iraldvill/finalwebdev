@@ -1,0 +1,50 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}{{ title }}{% endblock %}
+{% block page_title %}{{ title }}{% endblock %}
+{% block page_subtitle %}{{ is_new ? 'Create a new customer, staff or admin account' : 'Change the name, email, role or password' }}{% endblock %}
+
+{% block content %}
+  <section class="panel admin-form-panel">
+    {{ form_start(form, {'attr': {'class': 'admin-form', 'novalidate': 'novalidate'}}) }}
+
+      <div class="admin-form-row">
+        <div class="admin-form-field">
+          {{ form_label(form.fullName) }}
+          {{ form_widget(form.fullName) }}
+          {{ form_errors(form.fullName) }}
+        </div>
+        <div class="admin-form-field">
+          {{ form_label(form.email) }}
+          {{ form_widget(form.email) }}
+          {{ form_errors(form.email) }}
+        </div>
+      </div>
+
+      <div class="admin-form-row">
+        <div class="admin-form-field">
+          {{ form_label(form.role) }}
+          {{ form_widget(form.role) }}
+          {{ form_errors(form.role) }}
+        </div>
+        <div class="admin-form-field">
+          {{ form_label(form.plainPassword) }}
+          {{ form_widget(form.plainPassword) }}
+          {{ form_errors(form.plainPassword) }}
+        </div>
+      </div>
+
+      <div class="admin-form-check">
+        {{ form_widget(form.active) }}
+        {{ form_label(form.active) }}
+      </div>
+      {{ form_errors(form.active) }}
+
+      <div class="admin-form-actions">
+        <button type="submit" class="admin-form-submit">{{ is_new ? 'Create Account' : 'Save Changes' }}</button>
+        <a href="{{ path('app_dashboard') }}#accounts" class="admin-form-cancel">Cancel</a>
+      </div>
+
+    {{ form_end(form) }}
+  </section>
+{% endblock %}

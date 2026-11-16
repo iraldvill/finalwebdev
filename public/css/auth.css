@@ -160,3 +160,71 @@
   font-size: 12px;
   color: var(--muted-foreground);
 }
+
+/* My Profile page */
+.profile-card {
+  max-width: 520px;
+}
+
+.profile-list {
+  margin-top: 28px;
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 14px 16px;
+  font-size: 14px;
+}
+
+.profile-list dt {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted-foreground);
+  padding-top: 3px;
+}
+
+.profile-list dd {
+  color: var(--foreground);
+  word-break: break-word;
+}
+
+.profile-role {
+  display: inline-block;
+  padding: 2px 12px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.profile-role.role-admin { background: rgba(246, 4, 126, 0.15); color: var(--pink); }
+.profile-role.role-staff { background: rgba(0, 161, 245, 0.15); color: var(--cerulean); }
+.profile-role.role-customer { background: var(--muted); color: var(--muted-foreground); }
+
+.profile-section-title {
+  margin-top: 36px;
+  padding-top: 28px;
+  border-top: 1px solid var(--border);
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.profile-links {
+  margin-top: 28px;
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  font-size: 13px;
+}
+
+.profile-links a {
+  color: var(--muted-foreground);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.profile-links a:hover {
+  color: var(--cerulean);
+}

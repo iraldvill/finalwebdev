@@ -38,13 +38,6 @@
                 {{ form_errors(registrationForm.role) }}
             </div>
 
-            <div class="auth-field" id="code-field">
-                {{ form_label(registrationForm.registrationCode) }}
-                {{ form_widget(registrationForm.registrationCode) }}
-                {{ form_errors(registrationForm.registrationCode) }}
-                <span class="auth-hint">Ask the cafe owner for the code. Customers don't need one.</span>
-            </div>
-
             <div class="auth-field">
                 {{ form_label(registrationForm.plainPassword.first) }}
                 {{ form_widget(registrationForm.plainPassword.first) }}
@@ -66,17 +59,5 @@
     </div>
 </div>
 
-<script>
-    // Only show the registration code box for staff and admin
-    (function () {
-        var role = document.getElementById('{{ registrationForm.role.vars.id }}');
-        var codeField = document.getElementById('code-field');
-        function toggle() {
-            codeField.hidden = (role.value === 'customer');
-        }
-        role.addEventListener('change', toggle);
-        toggle();
-    })();
-</script>
 </body>
 </html>

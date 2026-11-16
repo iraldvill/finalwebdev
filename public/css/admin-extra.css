@@ -1,0 +1,83 @@
+/* Extra styles for the admin forms, flash messages and role badges.
+   Loaded after admin.css. */
+
+/* Flash messages */
+.flash {
+  padding: 14px 20px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  border: 1px solid var(--border);
+}
+
+.flash-success {
+  border-color: var(--cerulean);
+  background: rgba(0, 161, 245, 0.1);
+  color: var(--cerulean);
+}
+
+.flash-danger {
+  border-color: var(--pink);
+  background: rgba(246, 4, 126, 0.08);
+  color: #ffb3d6;
+}
+
+/* Form errors (shown under each field) */
+.admin-form-field ul {
+  list-style: none;
+}
+
+.admin-form-field ul li {
+  color: #ffb3d6;
+  font-size: 13px;
+}
+
+/* Checkbox row */
+.admin-form-check {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  font-size: 14px;
+}
+
+.admin-form-check input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--cerulean);
+}
+
+.admin-form-check label {
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 14px;
+  color: var(--foreground);
+}
+
+/* Buttons under a form */
+.admin-form-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.admin-form-cancel {
+  font-size: 13px;
+  color: var(--muted-foreground);
+  text-decoration: none;
+}
+
+.admin-form-cancel:hover {
+  color: var(--foreground);
+}
+
+/* Role badge colors */
+.badge.role-admin { background: rgba(246, 4, 126, 0.15); color: var(--pink); }
+.badge.role-staff { background: rgba(0, 161, 245, 0.15); color: var(--cerulean); }
+.badge.role-customer { background: var(--muted); color: var(--muted-foreground); }
+
+/* Sidebar items on form pages are real buttons that link to the dashboard */
+.admin-form-panel {
+  padding: 24px;
+  max-width: 820px;
+}

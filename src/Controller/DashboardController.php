@@ -31,7 +31,12 @@ class DashboardController extends AbstractController
                 'id' => $u->getId(),
                 'full_name' => $u->getFullName(),
                 'email' => $u->getEmail(),
-                'role' => in_array('ROLE_ADMIN', $u->getRoles(), true) ? 'admin' : 'customer',
+                'role' => match (true) {
+                    in_array('ROLE_ADMIN', $u->getRoles(), true) => 'admin',
+                    in_array('ROLE_STAFF', $u->getRoles(), true) => 'staff',
+                    default => 'customer',
+                },
+                'is_active' => $u->isActive(),
                 'created_at' => $u->getCreatedAt()?->format('Y-m-d H:i:s'),
             ];
         }
@@ -95,6 +100,7 @@ class DashboardController extends AbstractController
             'adminName' => $this->getUser()?->getFullName(),
             'stats' => [
                 'total_users' => count($users),
+                'total_staff' => count(array_filter($users, fn ($u) => 'staff' === $u['role'])),
                 'total_bookings' => count($bookings),
                 'active_bookings' => $bookingRepository->countActive(),
                 'today_bookings' => $bookingRepository->countOnDate($today),

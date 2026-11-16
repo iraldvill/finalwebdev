@@ -47,12 +47,6 @@ class RegistrationFormType extends AbstractType
                 'data' => 'customer',
                 'constraints' => [new NotBlank(message: 'Please choose an account type.')],
             ])
-            ->add('registrationCode', TextType::class, [
-                'label' => 'Registration code',
-                'mapped' => false,
-                'required' => false,
-                'attr' => ['autocomplete' => 'off', 'placeholder' => 'Staff and admin only'],
-            ])
             ->add('plainPassword', RepeatedType::class, [
                 'type' => PasswordType::class,
                 'mapped' => false, // never stored; we hash it in the controller
