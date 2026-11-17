@@ -1,0 +1,72 @@
+{% extends 'admin/base.html.twig' %}
+{% set nav_active = 'bookings' %}
+
+{% block title %}Edit Booking{% endblock %}
+{% block page_title %}Edit Booking{% endblock %}
+{% block page_subtitle %}{{ booking.user ? booking.user.fullName : 'Deleted user' }} — change the plan, schedule, status or payment{% endblock %}
+
+{% block content %}
+  <section class="panel admin-form-panel">
+    {{ form_start(form, {'attr': {'class': 'admin-form', 'novalidate': 'novalidate'}}) }}
+
+      {% if form.vars.errors|length %}
+        <div class="flash flash-danger">
+          {% for error in form.vars.errors %}{{ error.message }}{% endfor %}
+        </div>
+      {% endif %}
+
+      <div class="admin-form-row">
+        <div class="admin-form-field">
+          {{ form_label(form.planName) }}
+          {{ form_widget(form.planName) }}
+          {{ form_errors(form.planName) }}
+        </div>
+        <div class="admin-form-field">
+          {{ form_label(form.bookingDate) }}
+          {{ form_widget(form.bookingDate) }}
+          {{ form_errors(form.bookingDate) }}
+        </div>
+      </div>
+
+      <div class="admin-form-row">
+        <div class="admin-form-field">
+          {{ form_label(form.bookingTime) }}
+          {{ form_widget(form.bookingTime) }}
+          {{ form_errors(form.bookingTime) }}
+        </div>
+        <div class="admin-form-field">
+          {{ form_label(form.bookingTimeEnd) }}
+          {{ form_widget(form.bookingTimeEnd) }}
+          {{ form_errors(form.bookingTimeEnd) }}
+        </div>
+      </div>
+
+      <div class="admin-form-row">
+        <div class="admin-form-field">
+          {{ form_label(form.status) }}
+          {{ form_widget(form.status) }}
+          {{ form_errors(form.status) }}
+        </div>
+        <div class="admin-form-field">
+          {{ form_label(form.paymentMethod) }}
+          {{ form_widget(form.paymentMethod) }}
+          {{ form_errors(form.paymentMethod) }}
+        </div>
+      </div>
+
+      <div class="admin-form-row">
+        <div class="admin-form-field">
+          {{ form_label(form.paymentStatus) }}
+          {{ form_widget(form.paymentStatus) }}
+          {{ form_errors(form.paymentStatus) }}
+        </div>
+      </div>
+
+      <div class="admin-form-actions">
+        <button type="submit" class="admin-form-submit">Save Changes</button>
+        <a href="{{ path('app_dashboard') }}#bookings" class="admin-form-cancel">Cancel</a>
+      </div>
+
+    {{ form_end(form) }}
+  </section>
+{% endblock %}

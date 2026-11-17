@@ -66,6 +66,10 @@
           <div class="stat-label">Registered accounts</div>
         </div>
         <div class="stat-card">
+          <div class="stat-num">{{ stats.total_staff }}</div>
+          <div class="stat-label">Total staff</div>
+        </div>
+        <div class="stat-card">
           <div class="stat-num">{{ stats.total_bookings }}</div>
           <div class="stat-label">Total bookings</div>
         </div>
@@ -118,7 +122,14 @@
           <h2>All Bookings</h2>
           <span class="count">{{ bookings|length }} total</span>
         </div>
-        <table>
+        <div class="filter-bar" data-target="bookings-table">
+          <input type="search" data-filter="search" placeholder="Search user, plan, PC…" aria-label="Search bookings">
+          <select data-filter="status" aria-label="All statuses"><option value="">All statuses</option><option value="pending">Pending</option><option value="confirmed">Confirmed</option><option value="cancelled">Cancelled</option></select>
+          <select data-filter="payment" aria-label="All payments"><option value="">All payments</option><option value="unpaid">Unpaid</option><option value="paid">Paid</option></select>
+          <input type="date" data-filter="date" aria-label="Filter by date">
+          <button type="button" class="filter-reset">Reset</button>
+        </div>
+        <table id="bookings-table">
           <thead>
             <tr>
               <th>User</th>
@@ -134,7 +145,7 @@
           </thead>
           <tbody>
             {% for b in bookings %}
-              <tr>
+              <tr data-search="{{ ((b.full_name ?? '') ~ ' ' ~ b.plan_name ~ ' ' ~ b.stations ~ ' ' ~ b.booking_date)|lower|e('html_attr') }}" data-status="{{ b.status|lower }}" data-payment="{{ b.payment_status|lower }}" data-date="{{ b.booking_date }}">
                 <td>{{ b.full_name ?? 'Deleted user' }}</td>
                 <td>{{ b.plan_name }}</td>
                 <td>{{ b.stations }}</td>
@@ -147,14 +158,29 @@
                 </td>
                 <td>{{ b.created_at }}</td>
                 <td class="row-actions">
+                  <a href="{{ path('app_admin_booking_edit', {id: b.id}) }}" class="edit-btn">Edit</a>
+
                   {% if b.status|lower == 'pending' %}
-                    <button type="button" class="accept-btn">Accept</button>
-                    <button type="button" class="reject-btn">Reject</button>
+                    <form class="delete-form" method="post" action="{{ path('app_admin_booking_status', {id: b.id, action: 'accept'}) }}">
+                      <input type="hidden" name="_token" value="{{ csrf_token('booking-status-' ~ b.id) }}">
+                      <button type="submit" class="accept-btn">Accept</button>
+                    </form>
+                    <form class="delete-form" method="post" action="{{ path('app_admin_booking_status', {id: b.id, action: 'reject'}) }}">
+                      <input type="hidden" name="_token" value="{{ csrf_token('booking-status-' ~ b.id) }}">
+                      <button type="submit" class="reject-btn">Reject</button>
+                    </form>
                   {% endif %}
                   {% if b.payment_status|lower != 'paid' %}
-                    <button type="button" class="accept-btn">Mark Paid</button>
+                    <form class="delete-form" method="post" action="{{ path('app_admin_booking_paid', {id: b.id}) }}">
+                      <input type="hidden" name="_token" value="{{ csrf_token('booking-paid-' ~ b.id) }}">
+                      <button type="submit" class="accept-btn">Mark Paid</button>
+                    </form>
                   {% endif %}
-                  <button type="button" class="delete-btn">Delete</button>
+                  <form class="delete-form" method="post" action="{{ path('app_admin_booking_delete', {id: b.id}) }}"
+                        onsubmit="return confirm('Delete this booking? This cannot be undone.');">
+                    <input type="hidden" name="_token" value="{{ csrf_token('delete-booking-' ~ b.id) }}">
+                    <button type="submit" class="delete-btn">Delete</button>
+                  </form>
                 </td>
               </tr>
             {% else %}
@@ -176,7 +202,13 @@
           <h2>Registered Accounts</h2>
           <span class="count">{{ users|length }} total</span>
         </div>
-        <table>
+        <div class="filter-bar" data-target="accounts-table">
+          <input type="search" data-filter="search" placeholder="Search name or email…" aria-label="Search accounts">
+          <select data-filter="role" aria-label="All roles"><option value="">All roles</option><option value="admin">Admin</option><option value="staff">Staff</option><option value="customer">Customer</option></select>
+          <select data-filter="state" aria-label="All statuses"><option value="">All statuses</option><option value="active">Active</option><option value="disabled">Disabled</option></select>
+          <button type="button" class="filter-reset">Reset</button>
+        </div>
+        <table id="accounts-table">
           <thead>
             <tr>
               <th>Full Name</th>
@@ -189,7 +221,7 @@
           </thead>
           <tbody>
             {% for u in users %}
-              <tr>
+              <tr data-search="{{ (u.full_name ~ ' ' ~ u.email)|lower|e('html_attr') }}" data-role="{{ u.role }}" data-state="{{ u.is_active ? 'active' : 'disabled' }}">
                 <td>{{ u.full_name }}</td>
                 <td>{{ u.email }}</td>
                 <td><span class="badge role-{{ u.role }}">{{ u.role }}</span></td>
@@ -260,7 +292,12 @@
           <h2>Customer Reviews</h2>
           <span class="count">{{ reviews|length }} total</span>
         </div>
-        <table>
+        <div class="filter-bar" data-target="reviews-table">
+          <input type="search" data-filter="search" placeholder="Search user or feedback…" aria-label="Search reviews">
+          <select data-filter="rating" aria-label="All ratings"><option value="">All ratings</option><option value="5">5 stars</option><option value="4">4 stars</option><option value="3">3 stars</option><option value="2">2 stars</option><option value="1">1 star</option></select>
+          <button type="button" class="filter-reset">Reset</button>
+        </div>
+        <table id="reviews-table">
           <thead>
             <tr>
               <th>User</th>
@@ -272,7 +309,7 @@
           </thead>
           <tbody>
             {% for r in reviews %}
-              <tr>
+              <tr data-search="{{ ((r.full_name ?? '') ~ ' ' ~ (r.comment ?? ''))|lower|e('html_attr') }}" data-rating="{{ r.rating }}">
                 <td>{{ r.full_name ?? 'Deleted user' }}</td>
                 <td style="color: var(--pink); letter-spacing: 2px;">
                   {% for i in 1..5 %}{{ i <= r.rating ? '★' : '☆' }}{% endfor %}
@@ -285,7 +322,14 @@
                   {% endif %}
                 </td>
                 <td>{{ r.created_at }}</td>
-                <td><button type="button" class="delete-btn">Delete</button></td>
+                <td class="row-actions">
+                  <a href="{{ path('app_admin_review_edit', {id: r.id}) }}" class="edit-btn">Edit</a>
+                  <form class="delete-form" method="post" action="{{ path('app_admin_review_delete', {id: r.id}) }}"
+                        onsubmit="return confirm('Delete this review? This cannot be undone.');">
+                    <input type="hidden" name="_token" value="{{ csrf_token('delete-review-' ~ r.id) }}">
+                    <button type="submit" class="delete-btn">Delete</button>
+                  </form>
+                </td>
               </tr>
             {% else %}
               <tr class="empty-row"><td colspan="5">No reviews yet.</td></tr>
@@ -299,5 +343,6 @@
 </div>
 
 <script src="{{ asset('js/admin.js') }}"></script>
+<script src="{{ asset('js/admin-filter.js') }}"></script>
 </body>
 </html>

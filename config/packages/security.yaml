@@ -1,9 +1,7 @@
 security:
-    # How passwords are hashed ("auto" picks the best algorithm available)
     password_hashers:
         Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
 
-    # Users are loaded from the database, found by their email
     providers:
         app_user_provider:
             entity:
@@ -27,9 +25,8 @@ security:
                 path: app_logout
                 target: app_home
 
-    # Role-based route protection
-    # Not logged in -> redirected to /login. Logged in without the role -> 403.
     access_control:
         - { path: ^/dashboard, roles: ROLE_ADMIN }
         - { path: ^/admin, roles: ROLE_ADMIN }
+        - { path: ^/staff, roles: ROLE_STAFF }
         - { path: ^/profile, roles: ROLE_USER }

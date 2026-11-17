@@ -20,14 +20,16 @@ class BookingStationRepository extends ServiceEntityRepository
     /**
      * Your old double-booking check: is this PC already reserved on that
      * day for any time that overlaps start-end? Cancelled bookings don't count.
+     * Pass $exceptBookingId when editing a booking so it doesn't clash with itself.
      */
     public function isTaken(
         int $stationNumber,
         \DateTimeImmutable $date,
         \DateTimeImmutable $start,
         \DateTimeImmutable $end,
+        ?int $exceptBookingId = null,
     ): bool {
-        $count = $this->createQueryBuilder('s')
+        $qb = $this->createQueryBuilder('s')
             ->select('COUNT(s.id)')
             ->join('s.booking', 'b')
             ->where('s.stationNumber = :station')
@@ -39,11 +41,45 @@ class BookingStationRepository extends ServiceEntityRepository
             ->setParameter('date', $date, Types::DATE_IMMUTABLE)
             ->setParameter('cancelled', 'cancelled')
             ->setParameter('start', $start, Types::TIME_IMMUTABLE)
-            ->setParameter('end', $end, Types::TIME_IMMUTABLE)
-            ->getQuery()
-            ->getSingleScalarResult();
+            ->setParameter('end', $end, Types::TIME_IMMUTABLE);
 
-        return (int) $count > 0;
+        if (null !== $exceptBookingId) {
+            $qb->andWhere('b.id != :except')->setParameter('except', $exceptBookingId);
+        }
+
+        return (int) $qb->getQuery()->getSingleScalarResult() > 0;
+    }
+
+    /**
+     * Which PC numbers are already reserved on that day for any time overlapping start-end?
+     * Used by the staff booking form to grey out unavailable PCs.
+     * Cancelled bookings don't count; $exceptBookingId skips the booking being edited.
+     *
+     * @return int[]
+     */
+    public function findTakenNumbers(
+        \DateTimeImmutable $date,
+        \DateTimeImmutable $start,
+        \DateTimeImmutable $end,
+        ?int $exceptBookingId = null,
+    ): array {
+        $qb = $this->createQueryBuilder('s')
+            ->select('DISTINCT s.stationNumber')
+            ->join('s.booking', 'b')
+            ->where('s.bookingDate = :date')
+            ->andWhere('b.status != :cancelled')
+            ->andWhere('s.bookingTime < :end')
+            ->andWhere('s.bookingTimeEnd > :start')
+            ->setParameter('date', $date, Types::DATE_IMMUTABLE)
+            ->setParameter('cancelled', 'cancelled')
+            ->setParameter('start', $start, Types::TIME_IMMUTABLE)
+            ->setParameter('end', $end, Types::TIME_IMMUTABLE);
+
+        if (null !== $exceptBookingId) {
+            $qb->andWhere('b.id != :except')->setParameter('except', $exceptBookingId);
+        }
+
+        return array_map('intval', array_column($qb->getQuery()->getScalarResult(), 'stationNumber'));
     }
 
     /**

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ booking ? 'Edit Booking' : 'New Booking' }} — Villaflores Gaming Cafe</title>
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/auth.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/staff.css') }}">
+</head>
+<body>
+
+<div class="auth-wrapper brand-grid">
+    <div class="auth-card staff-card">
+        <a href="{{ path('app_home') }}">
+            <img src="{{ asset('images/logo.png') }}" alt="Villaflores Gaming Cafe Logo" class="auth-logo">
+        </a>
+
+        <h1 class="auth-title">{{ booking ? 'Edit Booking' : 'New Booking' }}</h1>
+        <p class="staff-subtitle">{{ booking ? 'Change your booking — the double-booking check runs again' : 'Book a session for a customer' }}</p>
+
+        {% for type, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="{{ type == 'success' ? 'auth-success' : 'auth-error' }}">{{ message }}</div>
+            {% endfor %}
+        {% endfor %}
+
+        {{ form_start(form, {'attr': {'class': 'auth-form', 'novalidate': 'novalidate'}}) }}
+
+            <div class="auth-field">
+                {{ form_label(form.customer) }}
+                {{ form_widget(form.customer) }}
+                {{ form_errors(form.customer) }}
+            </div>
+
+            <div class="auth-field">
+                {{ form_label(form.plan) }}
+                {{ form_widget(form.plan) }}
+                {{ form_errors(form.plan) }}
+            </div>
+
+            <div class="staff-row">
+                <div class="auth-field">
+                    {{ form_label(form.bookingDate) }}
+                    {{ form_widget(form.bookingDate) }}
+                    {{ form_errors(form.bookingDate) }}
+                </div>
+                <div class="auth-field">
+                    {{ form_label(form.startTime) }}
+                    {{ form_widget(form.startTime) }}
+                    {{ form_errors(form.startTime) }}
+                </div>
+                <div class="auth-field">
+                    {{ form_label(form.endTime) }}
+                    {{ form_widget(form.endTime) }}
+                    {{ form_errors(form.endTime) }}
+                </div>
+            </div>
+            <p class="staff-hint staff-hint-time">Extended Gaming ends automatically 5 hours after the start time. Per-hour plans are charged for every started hour.</p>
+
+            <div class="auth-field">
+                {{ form_label(form.stations) }}
+                <div class="pc-pick">
+                    {% for pc in form.stations %}
+                        <label class="pc-chip">
+                            {{ form_widget(pc) }}
+                            <span>{{ pc.vars.label|replace({'PC ': ''}) }}</span>
+                        </label>
+                    {% endfor %}
+                </div>
+                {{ form_errors(form.stations) }}
+                <p class="staff-hint" id="pc-counter"></p>
+            </div>
+
+            <div class="auth-field">
+                {{ form_label(form.paymentMethod) }}
+                {{ form_widget(form.paymentMethod) }}
+                {{ form_errors(form.paymentMethod) }}
+            </div>
+
+            <button type="submit" class="btn-primary-pink auth-submit">{{ booking ? 'Save changes' : 'Create booking' }}</button>
+
+        {{ form_end(form) }}
+
+        <div class="profile-links">
+            <a href="{{ path('app_staff_booking_index') }}">← All Bookings</a>
+            <a href="{{ path('app_home') }}">Back to Site</a>
+            <a href="{{ path('app_profile') }}">My Profile</a>
+            <a href="{{ path('app_logout') }}">Logout</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    // PC picker follows the plan: Hourly and Extended allow 1 PC, Gaming Package allows 3.
+    (function () {
+        var plan = document.getElementById('{{ form.plan.vars.id }}');
+        var boxes = Array.prototype.slice.call(document.querySelectorAll('.pc-pick input[type="checkbox"]'));
+        var note = document.getElementById('pc-counter');
+        if (!plan || !note) return;
+
+        function limit() {
+            var option = plan.options[plan.selectedIndex];
+            return option && option.dataset.pcs ? parseInt(option.dataset.pcs, 10) : 0;
+        }
+
+        function checkedBoxes() {
+            return boxes.filter(function (b) { return b.checked; });
+        }
+
+        function refresh(changed) {
+            var max = limit();
+
+            if (max === 0) {
+                boxes.forEach(function (b) { b.checked = false; b.disabled = true; });
+                note.textContent = 'Choose a plan first, then pick its PC.';
+                return;
+            }
+
+            if (max === 1 && changed && changed.checked) {
+                // One PC only: picking another one replaces the first.
+                boxes.forEach(function (b) { if (b !== changed) b.checked = false; });
+            }
+            // Plan switched to one that allows fewer PCs: keep only the first few.
+            checkedBoxes().slice(max).forEach(function (b) { b.checked = false; });
+
+            var count = checkedBoxes().length;
+            // With 3 PCs allowed, lock the rest once 3 are picked.
+            boxes.forEach(function (b) { b.disabled = max > 1 && !b.checked && count >= max; });
+
+            note.textContent = count + ' of ' + max + ' PC' + (max > 1 ? 's' : '') + ' selected';
+        }
+
+        plan.addEventListener('change', function () { refresh(null); });
+        boxes.forEach(function (b) {
+            b.addEventListener('change', function () { refresh(b); });
+        });
+        refresh(null);
+    })();
+
+    // Clicking anywhere on a date or time box opens its calendar / clock picker.
+    document.querySelectorAll('input[type="date"], input[type="time"]').forEach(function (input) {
+        input.addEventListener('click', function () {
+            if (typeof input.showPicker === 'function') {
+                try { input.showPicker(); } catch (e) { /* some browsers only allow the icon */ }
+            }
+        });
+    });
+</script>
+</body>
+</html>

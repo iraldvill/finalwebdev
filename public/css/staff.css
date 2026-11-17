@@ -1,0 +1,330 @@
+/* Staff booking pages (loaded after auth.css) */
+.staff-card {
+  max-width: 720px;
+}
+
+.staff-subtitle {
+  text-align: center;
+  margin-top: 6px;
+  font-size: 13px;
+  color: var(--muted-foreground);
+}
+
+.staff-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.staff-hint {
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--muted-foreground);
+}
+
+/* PC picker: a grid of numbered chips */
+.pc-pick {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(52px, 1fr));
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.pc-chip {
+  position: relative;
+  display: block;
+  margin: 0;
+  cursor: pointer;
+}
+
+.pc-chip input {
+  position: absolute;
+  opacity: 0;
+  inset: 0;
+  cursor: pointer;
+}
+
+.pc-chip span {
+  display: block;
+  padding: 10px 0;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 600;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--muted-foreground);
+  transition: all 0.15s ease;
+}
+
+.pc-chip:hover span {
+  border-color: var(--cerulean);
+  color: var(--foreground);
+}
+
+.pc-chip input:checked + span {
+  background: rgba(246, 4, 126, 0.15);
+  border-color: var(--pink);
+  color: var(--pink);
+}
+
+.pc-chip input:focus-visible + span {
+  outline: 2px solid var(--cerulean);
+  outline-offset: 2px;
+}
+
+@media (max-width: 600px) {
+  .staff-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---- Staff bookings list ---- */
+.staff-card.staff-wide {
+  max-width: 1180px;
+}
+
+.staff-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin: 28px 0 8px;
+}
+
+.staff-toolbar .count {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted-foreground);
+}
+
+.staff-add-btn {
+  display: inline-block;
+  padding: 10px 20px;
+  border: 1px dashed var(--cerulean);
+  border-radius: 8px;
+  color: var(--cerulean);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: background 0.2s ease;
+}
+
+.staff-add-btn:hover {
+  background: rgba(0, 161, 245, 0.1);
+}
+
+.staff-card .filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 0 18px;
+}
+
+.staff-card .filter-bar input,
+.staff-card .filter-bar select {
+  box-sizing: border-box;
+  height: 40px;
+  padding: 0 14px;
+  background-color: rgba(255, 255, 255, 0.04);
+  color: var(--foreground);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 13px;
+  color-scheme: dark;
+}
+
+.staff-card .filter-bar input[type="search"] {
+  flex: 1 1 240px;
+  min-width: 180px;
+}
+
+.staff-card .filter-bar input:focus,
+.staff-card .filter-bar select:focus {
+  outline: none;
+  border-color: var(--cerulean);
+}
+
+.staff-card .filter-bar .filter-reset {
+  height: 40px;
+  padding: 0 16px;
+  background: transparent;
+  color: var(--muted-foreground);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+}
+
+.staff-card .filter-bar .filter-reset:hover {
+  color: var(--pink);
+  border-color: var(--pink);
+}
+
+.staff-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+.staff-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  text-align: left;
+}
+
+.staff-table th {
+  padding: 12px 14px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted-foreground);
+  white-space: nowrap;
+  border-bottom: 1px solid var(--border);
+}
+
+.staff-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+
+.staff-table tr:last-child td {
+  border-bottom: none;
+}
+
+.staff-table tr.is-mine td:first-child {
+  box-shadow: inset 3px 0 0 var(--pink);
+}
+
+.staff-table tr[hidden] {
+  display: none;
+}
+
+.staff-table .empty-row td {
+  text-align: center;
+  color: var(--muted-foreground);
+  padding: 28px;
+}
+
+.s-badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  background: var(--muted);
+  color: var(--muted-foreground);
+}
+
+.s-badge.confirmed,
+.s-badge.paid { background: rgba(0, 161, 245, 0.15); color: var(--cerulean); }
+.s-badge.pending,
+.s-badge.unpaid { background: rgba(255, 193, 7, 0.15); color: #ffc107; }
+.s-badge.cancelled { background: rgba(246, 4, 126, 0.15); color: var(--pink); }
+.s-badge.mine { background: rgba(246, 4, 126, 0.15); color: var(--pink); }
+
+.staff-actions {
+  white-space: nowrap;
+  text-align: right;
+}
+
+.staff-edit-btn {
+  display: inline-block;
+  padding: 6px 14px;
+  border: 1px solid var(--cerulean);
+  border-radius: 6px;
+  color: var(--cerulean);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: background 0.2s ease;
+}
+
+.staff-edit-btn:hover {
+  background: rgba(0, 161, 245, 0.12);
+}
+
+.staff-inline-form {
+  display: inline;
+  margin: 0;
+}
+
+.staff-delete-btn {
+  padding: 6px 14px;
+  margin-left: 6px;
+  background: transparent;
+  border: 1px solid var(--pink);
+  border-radius: 6px;
+  color: var(--pink);
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.staff-delete-btn:hover {
+  background: rgba(246, 4, 126, 0.12);
+}
+
+/* Calendar and clock buttons inside the date / time boxes */
+.auth-field input[type="date"],
+.auth-field input[type="time"] {
+  color-scheme: dark;
+  cursor: pointer;
+}
+
+.auth-field input[type="date"]::-webkit-calendar-picker-indicator,
+.auth-field input[type="time"]::-webkit-calendar-picker-indicator {
+  opacity: 1;
+  cursor: pointer;
+  padding: 7px;
+  border-radius: 6px;
+  background-color: rgba(246, 4, 126, 0.25);
+  transition: background-color 0.2s ease;
+}
+
+.auth-field input[type="date"]::-webkit-calendar-picker-indicator:hover,
+.auth-field input[type="time"]::-webkit-calendar-picker-indicator:hover {
+  background-color: rgba(246, 4, 126, 0.5); 
+}
+
+/* PCs that can't be picked (no plan yet, or the plan's limit is reached) */
+.pc-chip input:disabled + span {
+  opacity: 0.35;
+  cursor: not-allowed;
+  border-color: var(--border);
+  color: var(--muted-foreground);
+}
+
+.pc-chip input:disabled {
+  cursor: not-allowed;
+}
+
+#pc-counter {
+  color: var(--cerulean);
+}
+
+/* PCs already booked at the chosen date and time */
+.pc-chip.is-taken span {
+  text-decoration: line-through;
+  background: rgba(246, 4, 126, 0.06);
+  border-color: rgba(246, 4, 126, 0.3);
+  color: rgba(246, 4, 126, 0.55);
+}

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bookings — Villaflores Gaming Cafe</title>
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/auth.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/staff.css') }}">
+</head>
+<body>
+
+<div class="auth-wrapper brand-grid">
+    <div class="auth-card staff-card staff-wide" data-filter-panel>
+        <a href="{{ path('app_home') }}">
+            <img src="{{ asset('images/logo.png') }}" alt="Villaflores Gaming Cafe Logo" class="auth-logo">
+        </a>
+
+        <h1 class="auth-title">Bookings</h1>
+        <p class="staff-subtitle">
+            All bookings · you can edit or delete the {{ mineCount }} you created
+        </p>
+
+        {% for type, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="{{ type == 'success' ? 'auth-success' : 'auth-error' }}">{{ message }}</div>
+            {% endfor %}
+        {% endfor %}
+
+        <div class="staff-toolbar">
+            <a href="{{ path('app_staff_booking_new') }}" class="staff-add-btn">+ New Booking</a>
+            <span class="count">{{ bookings|length }} total</span>
+        </div>
+
+        <div class="filter-bar" data-target="staff-bookings-table">
+            <input type="search" data-filter="search" placeholder="Search customer, plan, PC…" aria-label="Search bookings">
+            <select data-filter="mine" aria-label="Whose bookings">
+                <option value="">All bookings</option>
+                <option value="mine">My bookings</option>
+                <option value="other">Others' bookings</option>
+            </select>
+            <select data-filter="status" aria-label="Status">
+                <option value="">All statuses</option>
+                <option value="pending">Pending</option>
+                <option value="confirmed">Confirmed</option>
+                <option value="cancelled">Cancelled</option>
+            </select>
+            <select data-filter="payment" aria-label="Payment">
+                <option value="">All payments</option>
+                <option value="unpaid">Unpaid</option>
+                <option value="paid">Paid</option>
+            </select>
+            <input type="date" data-filter="date" aria-label="Filter by date">
+            <button type="button" class="filter-reset">Reset</button>
+        </div>
+
+        <div class="staff-table-wrap">
+            <table class="staff-table" id="staff-bookings-table">
+                <thead>
+                    <tr>
+                        <th>Customer</th>
+                        <th>Plan</th>
+                        <th>PC(s)</th>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Status</th>
+                        <th>Payment</th>
+                        <th>Amount</th>
+                        <th>Created by</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for b in bookings %}
+                        <tr class="{{ b.mine ? 'is-mine' : '' }}"
+                            data-search="{{ ((b.customer ?? '') ~ ' ' ~ b.plan ~ ' ' ~ b.stations ~ ' ' ~ b.date)|lower|e('html_attr') }}"
+                            data-mine="{{ b.mine ? 'mine' : 'other' }}"
+                            data-status="{{ b.status|lower }}"
+                            data-payment="{{ b.payment_status|lower }}"
+                            data-date="{{ b.date }}">
+                            <td>{{ b.customer ?? 'Deleted user' }}</td>
+                            <td>{{ b.plan }}</td>
+                            <td>{{ b.stations }}</td>
+                            <td>{{ b.date_label }}</td>
+                            <td>{{ b.time }}</td>
+                            <td><span class="s-badge {{ b.status|lower }}">{{ b.status }}</span></td>
+                            <td>
+                                {{ b.payment_method ?? '—' }}
+                                <span class="s-badge {{ b.payment_status|lower }}">{{ b.payment_status }}</span>
+                            </td>
+                            <td>₱{{ b.amount }}</td>
+                            <td>
+                                {% if b.mine %}
+                                    <span class="s-badge mine">You</span>
+                                {% else %}
+                                    {{ b.created_by ?? 'Customer' }}
+                                {% endif %}
+                            </td>
+                            <td class="staff-actions">
+                                {% if b.mine %}
+                                    <a href="{{ path('app_staff_booking_edit', {id: b.id}) }}" class="staff-edit-btn">Edit</a>
+                                    <form class="staff-inline-form" method="post" action="{{ path('app_staff_booking_delete', {id: b.id}) }}"
+                                          onsubmit="return confirm('Delete this booking? Its reserved PCs will be freed. This cannot be undone.');">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('staff-delete-booking-' ~ b.id) }}">
+                                        <button type="submit" class="staff-delete-btn">Delete</button>
+                                    </form>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr class="empty-row"><td colspan="10">No bookings yet.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="profile-links">
+            <a href="{{ path('app_home') }}">← Back to Site</a>
+            <a href="{{ path('app_profile') }}">My Profile</a>
+            <a href="{{ path('app_logout') }}">Logout</a>
+        </div>
+    </div>
+</div>
+
+<script src="{{ asset('js/admin-filter.js') }}"></script>
+</body>
+</html>

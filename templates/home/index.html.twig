@@ -26,6 +26,10 @@
                         <a href="{{ path('app_profile') }}" class="header-greeting" style="text-decoration: none;">Hi, {{ app.user.fullName }}</a>
                         <a href="{{ path('app_dashboard') }}" class="btn-login">Admin Panel</a>
                         <a href="{{ path('app_logout') }}" class="btn-login">Logout</a>
+                    {% elseif is_granted('ROLE_STAFF') %}
+                        <a href="{{ path('app_profile') }}" class="header-greeting" style="text-decoration: none;">Hi, {{ app.user.fullName }}</a>
+                        <a href="{{ path('app_staff_booking_index') }}" class="btn-login">Bookings</a>
+                        <a href="{{ path('app_logout') }}" class="btn-login">Logout</a>
                     {% elseif is_granted('IS_AUTHENTICATED') %}
                         <a href="{{ path('app_profile') }}" class="header-greeting" style="text-decoration: none;">Hi, {{ app.user.fullName }}</a>
                         <a href="#" class="btn-login">My Bookings</a>

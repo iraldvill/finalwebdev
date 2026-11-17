@@ -7,6 +7,7 @@
 <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
 <link rel="stylesheet" href="{{ asset('css/admin-extra.css') }}">
 </head>
+{% set nav = nav_active|default('accounts') %}
 <body>
 
 <aside class="sidebar">
@@ -16,19 +17,19 @@
   </div>
 
   <nav class="sidebar-nav">
-    <button type="button" data-url="{{ path('app_dashboard') }}#dashboard" onclick="location.href=this.dataset.url">
+    <button type="button" class="{{ nav == 'dashboard' ? 'active' : '' }}" data-url="{{ path('app_dashboard') }}#dashboard" onclick="location.href=this.dataset.url">
       <span class="icon">▦</span> Dashboard
     </button>
-    <button type="button" data-url="{{ path('app_dashboard') }}#bookings" onclick="location.href=this.dataset.url">
+    <button type="button" class="{{ nav == 'bookings' ? 'active' : '' }}" data-url="{{ path('app_dashboard') }}#bookings" onclick="location.href=this.dataset.url">
       <span class="icon">▤</span> Bookings
     </button>
-    <button type="button" class="active" data-url="{{ path('app_dashboard') }}#accounts" onclick="location.href=this.dataset.url">
+    <button type="button" class="{{ nav == 'accounts' ? 'active' : '' }}" data-url="{{ path('app_dashboard') }}#accounts" onclick="location.href=this.dataset.url">
       <span class="icon">◈</span> Accounts
     </button>
-    <button type="button" data-url="{{ path('app_dashboard') }}#stations" onclick="location.href=this.dataset.url">
+    <button type="button" class="{{ nav == 'stations' ? 'active' : '' }}" data-url="{{ path('app_dashboard') }}#stations" onclick="location.href=this.dataset.url">
       <span class="icon">▥</span> PC Stations
     </button>
-    <button type="button" data-url="{{ path('app_dashboard') }}#reviews" onclick="location.href=this.dataset.url">
+    <button type="button" class="{{ nav == 'reviews' ? 'active' : '' }}" data-url="{{ path('app_dashboard') }}#reviews" onclick="location.href=this.dataset.url">
       <span class="icon">★</span> Reviews
     </button>
   </nav>

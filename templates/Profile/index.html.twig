@@ -71,6 +71,9 @@
             {% if is_granted('ROLE_ADMIN') %}
                 <a href="{{ path('app_dashboard') }}">Admin Panel</a>
             {% endif %}
+            {% if is_granted('ROLE_STAFF') %}
+                <a href="{{ path('app_staff_booking_index') }}">Bookings</a>
+            {% endif %}
             <a href="{{ path('app_logout') }}">Logout</a>
         </div>
     </div>

@@ -1,0 +1,35 @@
+{% extends 'admin/base.html.twig' %}
+{% set nav_active = 'reviews' %}
+
+{% block title %}Edit Review{% endblock %}
+{% block page_title %}Edit Review{% endblock %}
+{% block page_subtitle %}Review by {{ review.user ? review.user.fullName : 'a deleted user' }}{% endblock %}
+
+{% block content %}
+  <section class="panel admin-form-panel">
+    {{ form_start(form, {'attr': {'class': 'admin-form', 'novalidate': 'novalidate'}}) }}
+
+      <div class="admin-form-row">
+        <div class="admin-form-field">
+          {{ form_label(form.rating) }}
+          {{ form_widget(form.rating) }}
+          {{ form_errors(form.rating) }}
+        </div>
+      </div>
+
+      <div class="admin-form-row">
+        <div class="admin-form-field">
+          {{ form_label(form.comment) }}
+          {{ form_widget(form.comment) }}
+          {{ form_errors(form.comment) }}
+        </div>
+      </div>
+
+      <div class="admin-form-actions">
+        <button type="submit" class="admin-form-submit">Save Changes</button>
+        <a href="{{ path('app_dashboard') }}#reviews" class="admin-form-cancel">Cancel</a>
+      </div>
+
+    {{ form_end(form) }}
+  </section>
+{% endblock %}
