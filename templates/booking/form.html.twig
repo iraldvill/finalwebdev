@@ -1,0 +1,234 @@
+{% set staffArea = area == 'staff' %}
+{% set pageTitle = booking ? 'Edit Booking' : (staffArea ? 'New Booking' : 'Book a Seat') %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ pageTitle }} — Villaflores Gaming Cafe</title>
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/auth.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/staff.css') }}">
+</head>
+<body>
+
+<div class="auth-wrapper brand-grid">
+    <div class="auth-card staff-card">
+        <a href="{{ path('app_home') }}">
+            <img src="{{ asset('images/logo.png') }}" alt="Villaflores Gaming Cafe Logo" class="auth-logo">
+        </a>
+
+        <h1 class="auth-title">{{ pageTitle }}</h1>
+        <p class="staff-subtitle">{{ booking ? 'Change your booking — the double-booking check runs again' : (staffArea ? 'Book a session for a customer' : 'Pick your plan, time and PC. Our staff will confirm your request.') }}</p>
+
+        {% for type, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="{{ type == 'success' ? 'auth-success' : 'auth-error' }}">{{ message }}</div>
+            {% endfor %}
+        {% endfor %}
+
+        {{ form_start(form, {'attr': {'class': 'auth-form', 'novalidate': 'novalidate'}}) }}
+
+            {% if form.customer is defined %}
+            <div class="auth-field">
+                {{ form_label(form.customer) }}
+                {{ form_widget(form.customer) }}
+                {{ form_errors(form.customer) }}
+            </div>
+            {% endif %}
+
+            <div class="auth-field">
+                {{ form_label(form.plan) }}
+                {{ form_widget(form.plan) }}
+                {{ form_errors(form.plan) }}
+            </div>
+
+            <div class="staff-row">
+                <div class="auth-field">
+                    {{ form_label(form.bookingDate) }}
+                    {{ form_widget(form.bookingDate) }}
+                    {{ form_errors(form.bookingDate) }}
+                </div>
+                <div class="auth-field">
+                    {{ form_label(form.startTime) }}
+                    {{ form_widget(form.startTime) }}
+                    {{ form_errors(form.startTime) }}
+                </div>
+                <div class="auth-field">
+                    {{ form_label(form.endTime) }}
+                    {{ form_widget(form.endTime) }}
+                    {{ form_errors(form.endTime) }}
+                </div>
+            </div>
+            <p class="staff-hint staff-hint-time">Extended Gaming ends automatically 5 hours after the start time. Per-hour plans are charged for every started hour.</p>
+
+            <div class="auth-field">
+                {{ form_label(form.stations) }}
+                <div class="pc-pick">
+                    {% for pc in form.stations %}
+                        <label class="pc-chip">
+                            {{ form_widget(pc) }}
+                            <span>{{ pc.vars.label|replace({'PC ': ''}) }}</span>
+                        </label>
+                    {% endfor %}
+                </div>
+                {{ form_errors(form.stations) }}
+                <p class="staff-hint" id="pc-counter"></p>
+            </div>
+
+            <div class="auth-field">
+                {{ form_label(form.paymentMethod) }}
+                {{ form_widget(form.paymentMethod) }}
+                {{ form_errors(form.paymentMethod) }}
+            </div>
+
+            <button type="submit" class="btn-primary-pink auth-submit">{{ booking ? 'Save changes' : (staffArea ? 'Create booking' : 'Send booking request') }}</button>
+
+        {{ form_end(form) }}
+
+        <div class="profile-links">
+            {% if staffArea %}
+                <a href="{{ path('app_staff_booking_index') }}">← All Bookings</a>
+            {% else %}
+                <a href="{{ path('app_booking_index') }}">← My Bookings</a>
+            {% endif %}
+            <a href="{{ path('app_home') }}">Back to Site</a>
+            <a href="{{ path('app_profile') }}">My Profile</a>
+            <a href="{{ path('app_logout') }}">Logout</a>
+        </div>
+    </div>
+</div>
+
+{# Values the script below needs (kept here so the script itself has no Twig quotes in it) #}
+<div id="booking-config" hidden
+     data-availability-url="{{ path(staffArea ? 'app_staff_booking_availability' : 'app_booking_availability') }}"
+     data-except-id="{{ booking ? booking.id : '' }}"></div>
+
+<script>
+    // PC picker: follows the plan (1 or 3 PCs) and greys out PCs already booked at the chosen time.
+    (function () {
+        var plan = document.getElementById('{{ form.plan.vars.id }}');
+        var dateEl = document.getElementById('{{ form.bookingDate.vars.id }}');
+        var startEl = document.getElementById('{{ form.startTime.vars.id }}');
+        var endEl = document.getElementById('{{ form.endTime.vars.id }}');
+        var boxes = Array.prototype.slice.call(document.querySelectorAll('.pc-pick input[type="checkbox"]'));
+        var note = document.getElementById('pc-counter');
+        var config = document.getElementById('booking-config');
+        var availabilityUrl = config.dataset.availabilityUrl;
+        var exceptId = config.dataset.exceptId;
+        if (!plan || !note) return;
+
+        var taken = {};        // PC number -> true when already booked at the chosen time
+        var lastRequest = 0;
+
+        function pcNumber(box) { return parseInt(box.dataset.pc, 10); }
+
+        function limit() {
+            var option = plan.options[plan.selectedIndex];
+            return option && option.dataset.pcs ? parseInt(option.dataset.pcs, 10) : 0;
+        }
+
+        function checkedBoxes() {
+            return boxes.filter(function (b) { return b.checked; });
+        }
+
+        function pad(n) { return (n < 10 ? '0' : '') + n; }
+
+        // Extended Gaming ends 5 hours after the start; other plans use the End time box.
+        function endValue() {
+            var option = plan.options[plan.selectedIndex];
+            if (option && option.dataset.hours && startEl.value) {
+                var parts = startEl.value.split(':');
+                var total = (parseInt(parts[0], 10) + parseInt(option.dataset.hours, 10)) * 60 + parseInt(parts[1], 10);
+                return total >= 1440 ? '' : pad(Math.floor(total / 60)) + ':' + pad(total % 60);
+            }
+            return endEl.value;
+        }
+
+        function refresh(changed) {
+            var max = limit();
+            var released = [];
+
+            // A PC that is taken at this time can't stay selected.
+            boxes.forEach(function (b) {
+                var isTaken = !!taken[pcNumber(b)];
+                if (isTaken && b.checked) { b.checked = false; released.push(pcNumber(b)); }
+                b.parentElement.classList.toggle('is-taken', isTaken);
+                b.parentElement.title = isTaken ? 'Already booked at this time' : '';
+            });
+
+            if (max === 0) {
+                boxes.forEach(function (b) { b.checked = false; b.disabled = true; });
+                note.textContent = 'Choose a plan first, then pick its PC.';
+                return;
+            }
+
+            if (max === 1 && changed && changed.checked) {
+                // One PC only: picking another one replaces the first.
+                boxes.forEach(function (b) { if (b !== changed) b.checked = false; });
+            }
+            // Plan switched to one that allows fewer PCs: keep only the first few.
+            checkedBoxes().slice(max).forEach(function (b) { b.checked = false; });
+
+            var count = checkedBoxes().length;
+            boxes.forEach(function (b) {
+                var full = max > 1 && !b.checked && count >= max;   // 3-PC plan: lock the rest at 3
+                b.disabled = !!taken[pcNumber(b)] || full;
+            });
+
+            var text = count + ' of ' + max + ' PC' + (max > 1 ? 's' : '') + ' selected';
+            if (released.length) {
+                text += ' — PC ' + released.join(', PC ') + ' is booked at that time and was unselected';
+            }
+            note.textContent = text;
+        }
+
+        function loadTaken() {
+            var end = endValue();
+            if (!dateEl.value || !startEl.value || !end || end <= startEl.value) {
+                taken = {};
+                refresh(null);
+                return;
+            }
+
+            var query = 'date=' + encodeURIComponent(dateEl.value)
+                + '&start=' + encodeURIComponent(startEl.value)
+                + '&end=' + encodeURIComponent(end)
+                + (exceptId ? '&except=' + encodeURIComponent(exceptId) : '');
+            var request = ++lastRequest;
+
+            fetch(availabilityUrl + '?' + query, { headers: { 'Accept': 'application/json' } })
+                .then(function (response) { return response.json(); })
+                .then(function (data) {
+                    if (request !== lastRequest) return;   // a newer request replaced this one
+                    taken = {};
+                    (data.taken || []).forEach(function (n) { taken[n] = true; });
+                    refresh(null);
+                })
+                .catch(function () { /* the server still checks on submit */ });
+        }
+
+        plan.addEventListener('change', loadTaken);
+        [dateEl, startEl, endEl].forEach(function (el) {
+            el.addEventListener('change', loadTaken);
+            el.addEventListener('input', loadTaken);
+        });
+        boxes.forEach(function (b) {
+            b.addEventListener('change', function () { refresh(b); });
+        });
+
+        refresh(null);
+        loadTaken();
+    })();
+
+    // Clicking anywhere on a date or time box opens its calendar / clock picker.
+    document.querySelectorAll('input[type="date"], input[type="time"]').forEach(function (input) {
+        input.addEventListener('click', function () {
+            if (typeof input.showPicker === 'function') {
+                try { input.showPicker(); } catch (e) { /* some browsers only allow the icon */ }
+            }
+        });
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,68 @@
+/* "Rate us" page (loaded after auth.css) */
+.review-subtitle {
+  text-align: center;
+  margin-top: 6px;
+  font-size: 13px;
+  color: var(--muted-foreground);
+}
+
+/* Star picker: the page lists 5→1 and flips the row, so stars read 1 → 5.
+   A star and every star to its left light up together. */
+.star-rating {
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.star-rating input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+}
+
+.star-rating label {
+  margin: 0;
+  font-size: 42px;
+  line-height: 1;
+  color: var(--muted);
+  cursor: pointer;
+  text-transform: none;
+  transition: color 0.15s ease, transform 0.15s ease;
+}
+
+.star-rating label:hover,
+.star-rating label:hover ~ label,
+.star-rating input:checked ~ label {
+  color: var(--pink);
+}
+
+.star-rating label:hover {
+  transform: scale(1.12);
+}
+
+.star-rating input:focus-visible + label {
+  outline: 2px solid var(--cerulean);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+.auth-field textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 14px 16px;
+  background: var(--input, rgba(255, 255, 255, 0.04));
+  color: var(--foreground);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 14px;
+  resize: vertical;
+}
+
+.auth-field textarea:focus {
+  outline: none;
+  border-color: var(--cerulean);
+}   

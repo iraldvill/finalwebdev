@@ -10,11 +10,13 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\TimeType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Count;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
 /**
- * Staff: create a booking for a customer.
+ * The booking form, used by staff (who pick a customer) and by customers (booking for themselves:
+ * pass 'with_customer' => false).
  * Not tied to an entity — the controller builds the Booking from the answers.
  */
 class StaffBookingFormType extends AbstractType
@@ -38,15 +40,19 @@ class StaffBookingFormType extends AbstractType
             $stations['PC '.$n] = $n;
         }
 
+        if ($options['with_customer']) {
+            $builder
+                ->add('customer', EntityType::class, [
+                    'class' => User::class,
+                    'choices' => $customers,
+                    'choice_label' => fn (User $u) => $u->getFullName().' ('.$u->getEmail().')',
+                    'placeholder' => 'Choose a customer…',
+                    'label' => 'Customer',
+                    'constraints' => [new NotBlank(message: 'Please choose a customer.')],
+                ]);
+        }
+
         $builder
-            ->add('customer', EntityType::class, [
-                'class' => User::class,
-                'choices' => $customers,
-                'choice_label' => fn (User $u) => $u->getFullName().' ('.$u->getEmail().')',
-                'placeholder' => 'Choose a customer…',
-                'label' => 'Customer',
-                'constraints' => [new NotBlank(message: 'Please choose a customer.')],
-            ])
             ->add('plan', ChoiceType::class, [
                 'label' => 'Plan',
                 'choices' => [
@@ -96,5 +102,10 @@ class StaffBookingFormType extends AbstractType
                 'placeholder' => 'Pay at the counter',
                 'choices' => ['GCash' => 'gcash', 'Maya' => 'maya'],
             ]);
+    }
+
+    public function configureOptions(OptionsResolver $resolver): void
+    {
+        $resolver->setDefaults(['with_customer' => true]);
     }
 }

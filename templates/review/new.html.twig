@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rate Us — Villaflores Gaming Cafe</title>
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/auth.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/review.css') }}">
+</head>
+<body>
+
+<div class="auth-wrapper brand-grid">
+    <div class="auth-card">
+        <a href="{{ path('app_home') }}">
+            <img src="{{ asset('images/logo.png') }}" alt="Villaflores Gaming Cafe Logo" class="auth-logo">
+        </a>
+
+        <h1 class="auth-title">Rate Us</h1>
+        <p class="review-subtitle">How was your time at Villaflores, {{ app.user.fullName }}?</p>
+
+        {% for type, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="{{ type == 'success' ? 'auth-success' : 'auth-error' }}">{{ message }}</div>
+            {% endfor %}
+        {% endfor %}
+
+        {{ form_start(form, {'attr': {'class': 'auth-form', 'novalidate': 'novalidate'}}) }}
+
+            <div class="auth-field">
+                {{ form_label(form.rating) }}
+                <div class="star-rating">
+                    {% for star in form.rating %}
+                        {{ form_widget(star) }}
+                        <label for="{{ star.vars.id }}" title="{{ star.vars.attr.title|default('') }}">★</label>
+                    {% endfor %}
+                </div>
+                {{ form_errors(form.rating) }}
+            </div>
+
+            <div class="auth-field">
+                {{ form_label(form.comment) }}
+                {{ form_widget(form.comment) }}
+                {{ form_errors(form.comment) }}
+            </div>
+
+            <button type="submit" class="btn-primary-pink auth-submit">Post review</button>
+
+        {{ form_end(form) }}
+
+        <div class="profile-links">
+            <a href="{{ path('app_home') }}#community">← Back to Site</a>
+            <a href="{{ path('app_profile') }}">My Profile</a>
+            <a href="{{ path('app_logout') }}">Logout</a>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
